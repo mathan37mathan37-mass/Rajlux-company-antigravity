@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin.html
-
-Sitemap: https://rajlux-digital-solutions.vercel.app/sitemap.xml
