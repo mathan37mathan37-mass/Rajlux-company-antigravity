@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Website Management – Rajlux Digital Solutions</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- ========== 1. LOGIN OVERLAY MODAL ========== -->
+  <div id="login-modal">
+    <div class="login-card">
+      <div class="login-logo">👑 RL</div>
+      <h2 class="login-title">Rajlux Admin Portal</h2>
+      <p class="login-subtitle">Company Website Management Console</p>
+      <form class="login-form" id="login-form">
+        <div class="login-field">
+          <label for="admin-pwd">Enter Portal Password</label>
+          <div class="login-input-wrap">
+            <input type="password" id="admin-pwd" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" class="toggle-pwd" id="toggle-pwd-btn">👁️</button>
+          </div>
+        </div>
+        <div class="login-error" id="login-error">
+          ⚠️ Incorrect password. Try again.
+        </div>
+        <button type="submit" class="login-btn" id="login-submit-btn">Access Management System →</button>
+        <button type="button" class="btn-header" id="quick-demo-login-btn" style="width: 100%; margin-top: 8px; justify-content: center; background: rgba(255, 215, 0, 0.12); color: var(--gold-primary); border: 1px solid var(--border-gold); padding: 10px; font-weight: 600;">
+          ⚡ Quick Demo Login (admin123)
+        </button>
+      </form>
+      <div style="margin-top: 14px; font-size: 0.8rem; color: var(--text-dim);">
+        Default Password: <code style="color: var(--gold-primary); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">admin123</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 2. MAIN ADMIN APP ========== -->
+  <div class="admin-app" id="admin-app">
+
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <!-- Mobile hamburger toggle -->
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="admin-brand">
+          <span class="brand-icon">👑 RL</span>
+          <div>
+            <div class="brand-title">Rajlux Digital Solutions</div>
+            <span class="brand-badge">Management Portal</span>
+          </div>
+        </div>
+      </div>
+      <div class="admin-header-actions">
+        <div class="live-status">
+          <span class="status-dot"></span>
+          <span id="firebase-status-text">Live System</span>
+        </div>
+        <a href="index.html" target="_blank" class="btn-header btn-header-icon" title="Open Website">🌐 <span class="btn-label">Website</span></a>
+        <button class="btn-header btn-logout btn-header-icon" id="logout-btn">🔒 <span class="btn-label">Logout</span></button>
+      </div>
+    </header>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Body Layout -->
+    <div class="admin-container">
+
+      <!-- Sidebar Navigation -->
+      <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="sidebar-close-wrap">
+          <button class="sidebar-close" id="sidebar-close">✕</button>
+        </div>
+        <a href="#" class="nav-item active" data-tab="dashboard-tab">
+          <div class="nav-item-left">
+            <span>📊</span>
+            <span>Dashboard</span>
+          </div>
+        </a>
+        <a href="#" class="nav-item" data-tab="projects-tab">
+          <div class="nav-item-left">
+            <span>📁</span>
+            <span>Projects &amp; Approvals</span>
+          </div>
+          <span class="nav-badge" id="pending-projects-badge" style="background: var(--gold-primary); color: #000;">1</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="inbox-tab">
+          <div class="nav-item-left">
+            <span>💬</span>
+            <span>Messages Inbox</span>
+          </div>
+          <span class="nav-badge" id="unread-count-badge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="settings-tab">
+          <div class="nav-item-left">
+            <span>⚙️</span>
+            <span>Settings &amp; Security</span>
+          </div>
+        </a>
+      </aside>
+
+      <!-- Content Area -->
+      <main class="admin-content">
+
+        <!-- TAB 1: DASHBOARD -->
+        <div class="tab-pane active" id="dashboard-tab">
+          <div class="tab-header">
+            <div>
+              <h1>Dashboard Overview</h1>
+              <p>Real-time website inquiry statistics and customer messages</p>
+            </div>
+            <button class="btn-header" id="dash-refresh-btn">🔄 Refresh</button>
+          </div>
+
+          <!-- Metrics Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Total Inquiries</span>
+                <span class="stat-card-icon">📬</span>
+              </div>
+              <div class="stat-card-val" id="stat-total-val">0</div>
+              <div class="stat-card-sub">Messages received</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Unread Messages</span>
+                <span class="stat-card-icon">🔔</span>
+              </div>
+              <div class="stat-card-val" id="stat-unread-val">0</div>
+              <div class="stat-card-sub" style="color: var(--gold-primary);">Action required</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Top Service</span>
+                <span class="stat-card-icon">🌐</span>
+              </div>
+              <div class="stat-card-val" id="stat-top-service-val" style="font-size: 1.1rem; margin-top: 6px;">-</div>
+              <div class="stat-card-sub">Most requested</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Data Storage</span>
+                <span class="stat-card-icon">🛡️</span>
+              </div>
+              <div class="stat-card-val" id="stat-storage-mode" style="font-size: 1.1rem; color: var(--accent-green);">Loading</div>
+              <div class="stat-card-sub">Active sync mode</div>
+            </div>
+          </div>
+
+          <!-- Dashboard Recent Messages Widget -->
+          <div class="dashboard-widget">
+            <div class="widget-header">
+              <h3>Recent Messages</h3>
+              <a href="#" class="btn-header" id="view-all-inbox-btn">View All →</a>
+            </div>
+            <div id="dash-recent-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: PROJECTS & APPROVALS -->
+        <div class="tab-pane" id="projects-tab">
+          <div class="tab-header">
+            <div>
+              <h1>Project Management &amp; Approvals</h1>
+              <p>Approve incoming customer requests, assign Project IDs, update progress %, and manage client portals</p>
+            </div>
+            <div class="tab-header-actions">
+              <a href="portal.html" target="_blank" class="btn-header" style="background: rgba(0,212,255,0.12); color: var(--accent-cyan); border-color: rgba(0,212,255,0.3);">
+                ✨ Open Client Portal
+              </a>
+              <button class="btn-header" id="refresh-projects-btn">🔄 Refresh</button>
+            </div>
+          </div>
+
+          <!-- Project Metrics -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Active Projects</span>
+                <span class="stat-card-icon">🚀</span>
+              </div>
+              <div class="stat-card-val" id="stat-active-prj-val">0</div>
+              <div class="stat-card-sub" style="color: var(--accent-green);">In Development / QA</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Pending Approvals</span>
+                <span class="stat-card-icon">⏳</span>
+              </div>
+              <div class="stat-card-val" id="stat-pending-prj-val" style="color: var(--gold-primary);">0</div>
+              <div class="stat-card-sub">Action required</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Completed Projects</span>
+                <span class="stat-card-icon">🏆</span>
+              </div>
+              <div class="stat-card-val" id="stat-completed-prj-val">0</div>
+              <div class="stat-card-sub">Lifetime support active</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <span class="stat-card-title">Pipeline Value</span>
+                <span class="stat-card-icon">💰</span>
+              </div>
+              <div class="stat-card-val" id="stat-pipeline-val" style="font-size: 1.15rem; color: #fff;">₹0</div>
+              <div class="stat-card-sub">Total project volume</div>
+            </div>
+          </div>
+
+          <!-- SECTION 1: PENDING APPROVALS QUEUE -->
+          <div class="dashboard-widget" style="margin-bottom: 28px;">
+            <div class="widget-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">⏳</span>
+                <h3>Pending Customer Project Requests (Approvals Required)</h3>
+              </div>
+              <span class="nav-badge" id="pending-badge-count" style="background: var(--gold-primary); color: #000;">0</span>
+            </div>
+            <div id="pending-requests-list" class="pending-requests-grid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- SECTION 2: ACTIVE PROJECTS MANAGEMENT -->
+          <div class="dashboard-widget">
+            <div class="widget-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">📂</span>
+                <h3>Active Client Projects Workspace</h3>
+              </div>
+              <div class="filter-group">
+                <select class="filter-select" id="project-status-filter">
+                  <option value="all">All Statuses</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending_approval">Pending Approval</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="messages-table-wrap">
+              <table class="messages-table">
+                <thead>
+                  <tr>
+                    <th>Project ID</th>
+                    <th>Client &amp; Service</th>
+                    <th>Package / Budget</th>
+                    <th>Progress (%)</th>
+                    <th>Status</th>
+                    <th>Target Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="projects-table-body">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Projects Card List (Shown on Small Screens) -->
+            <div class="projects-card-list" id="projects-card-list">
+              <!-- Rendered via JS on Mobile -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: INBOX -->
+        <div class="tab-pane" id="inbox-tab">
+          <div class="tab-header">
+            <div>
+              <h1>Customer Messages Inbox</h1>
+              <p>Manage and respond to website inquiries</p>
+            </div>
+            <div class="tab-header-actions">
+              <button class="btn-header" id="export-csv-btn">📥 CSV</button>
+              <button class="btn-header btn-pdf" id="export-pdf-btn">📄 PDF Report</button>
+            </div>
+          </div>
+
+          <!-- Controls Bar -->
+          <div class="inbox-controls">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="inbox-search" placeholder="Search by name, email, message..." />
+            </div>
+
+            <div class="filter-group">
+              <select class="filter-select" id="inbox-status-filter">
+                <option value="all">All Statuses</option>
+                <option value="unread">Unread Only</option>
+                <option value="read">Read Only</option>
+              </select>
+
+              <select class="filter-select" id="inbox-service-filter">
+                <option value="all">All Services</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Mobile App Development">Mobile App Development</option>
+                <option value="Digital Marketing">Digital Marketing</option>
+                <option value="Branding &amp; Identity">Branding &amp; Identity</option>
+                <option value="Cloud &amp; IT Solutions">Cloud &amp; IT Solutions</option>
+                <option value="E-Commerce Solutions">E-Commerce Solutions</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Mobile card list (shown on small screens) -->
+          <div class="messages-card-list" id="messages-card-list">
+            <!-- Rendered via JS for mobile -->
+          </div>
+
+          <!-- Table Container (shown on larger screens) -->
+          <div class="messages-table-wrap">
+            <table class="messages-table">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Customer Name</th>
+                  <th>Contact Info</th>
+                  <th>Service</th>
+                  <th>Date &amp; Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inbox-table-body">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 3: SETTINGS -->
+        <div class="tab-pane" id="settings-tab">
+          <div class="tab-header">
+            <div>
+              <h1>Portal Settings &amp; Security</h1>
+              <p>Manage admin authentication and Firebase configuration</p>
+            </div>
+          </div>
+
+          <!-- Settings Tab Sections -->
+
+          <div class="settings-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+              <h3 style="margin-bottom: 0;">✉️ Email Auto-Reply Settings (EmailJS)</h3>
+              <span id="emailjs-status-badge" class="service-badge" style="background: rgba(255,255,255,0.06); color: var(--text-muted);">Unconfigured</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+              Automatically send a personalized <strong>"Thank You" confirmation email</strong> to users who submit the contact form, and receive admin alerts. Free setup at
+              <a href="https://www.emailjs.com/" target="_blank" style="color: var(--gold-primary); text-decoration: underline;">EmailJS.com</a>.
+            </p>
+            <form class="settings-form" id="emailjs-config-form">
+              <div class="login-field" style="margin-bottom: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; text-transform: none; font-size: 0.95rem;">
+                  <input type="checkbox" id="email-enabled" style="accent-color: var(--gold-primary); width: 18px; height: 18px;" checked />
+                  <span><strong>Enable Automated Thank-You Emails</strong></span>
+                </label>
+              </div>
+              <div class="login-field">
+                <label for="email-publickey">EmailJS Public Key</label>
+                <input type="text" id="email-publickey" class="filter-select" placeholder="e.g. user_abcdef123456789" />
+              </div>
+              <div class="login-field">
+                <label for="email-serviceid">Service ID</label>
+                <input type="text" id="email-serviceid" class="filter-select" placeholder="e.g. service_rajlux" />
+              </div>
+              <div class="login-field">
+                <label for="email-templateid">Thank-You Auto-Reply Template ID</label>
+                <input type="text" id="email-templateid" class="filter-select" placeholder="e.g. template_thankyou" />
+              </div>
+              <div class="login-field">
+                <label for="email-admintemplateid">Admin Notification Template ID (Optional)</label>
+                <input type="text" id="email-admintemplateid" class="filter-select" placeholder="e.g. template_admin_alert" />
+              </div>
+              <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;">
+                <button type="submit" class="btn-header" style="background: var(--gold-gradient); color: #000; font-weight: 600;">
+                  💾 Save Email Settings
+                </button>
+                <button type="button" class="btn-header" id="email-test-btn" style="background: rgba(255,255,255,0.08);">
+                  🧪 Send Test Auto-Reply
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="settings-section">
+            <h3>🔒 Change Admin Portal Password</h3>
+            <form class="settings-form" id="pwd-change-form">
+              <div class="login-field">
+                <label for="current-pwd">Current Password</label>
+                <input type="password" id="current-pwd" class="filter-select" required />
+              </div>
+              <div class="login-field">
+                <label for="new-pwd">New Password</label>
+                <input type="password" id="new-pwd" class="filter-select" required minlength="4" />
+              </div>
+              <button type="submit" class="btn-header" style="align-self: flex-start; background: var(--gold-gradient); color: #000;">Update Password</button>
+            </form>
+          </div>
+
+          <div class="settings-section">
+            <h3>🧹 Message Data Management</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+              Manage stored message data. Sample messages will be seeded automatically on first login if inbox is empty.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn-header" id="seed-demo-btn">📦 Load Sample Messages</button>
+              <button class="btn-header btn-logout" id="clear-all-btn">🗑️ Delete All Messages</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-bottom-nav">
+      <a href="#" class="mob-nav-item active" data-tab="dashboard-tab">
+        <span class="mob-nav-icon">📊</span>
+        <span class="mob-nav-label">Dashboard</span>
+      </a>
+      <a href="#" class="mob-nav-item" data-tab="projects-tab">
+        <span class="mob-nav-icon">📁</span>
+        <span class="mob-nav-label">Projects</span>
+      </a>
+      <a href="#" class="mob-nav-item" data-tab="inbox-tab">
+        <span class="mob-nav-icon">💬</span>
+        <span class="mob-nav-label">Inbox</span>
+        <span class="mob-nav-badge" id="mob-unread-badge">0</span>
+      </a>
+      <a href="#" class="mob-nav-item" data-tab="settings-tab">
+        <span class="mob-nav-icon">⚙️</span>
+        <span class="mob-nav-label">Settings</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- ========== 3. MESSAGE DETAIL VIEW MODAL ========== -->
+  <div id="detail-modal">
+    <div class="detail-card">
+      <button class="modal-close" id="modal-close-btn">&times;</button>
+      <div class="detail-header">
+        <div class="detail-sender" id="modal-sender-name">Customer Name</div>
+        <div class="detail-meta">
+          <span id="modal-sender-email">📧 email@example.com</span>
+          <span id="modal-sender-phone">📞 +91 XXXXX XXXXX</span>
+          <span id="modal-date">📅 Aug 9, 2026</span>
+        </div>
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-label">Service Interested In</div>
+        <div style="margin-bottom: 16px;" id="modal-service-wrap">
+          <span class="service-badge" id="modal-service">Web Development</span>
+        </div>
+
+        <div class="detail-label">Customer Message</div>
+        <div class="detail-text" id="modal-message-body">Full message content goes here...</div>
+      </div>
+
+      <div class="detail-actions">
+        <a href="#" class="btn-reply-wa" id="modal-wa-btn" target="_blank">💬 WhatsApp</a>
+        <a href="#" class="btn-reply-email" id="modal-email-btn">📧 Email</a>
+        <button class="btn-header btn-logout" id="modal-delete-btn" style="border-radius: 50px;">🗑️ Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 4. PROJECT EDITOR & APPROVAL MODAL ========== -->
+  <div id="project-editor-modal" class="custom-admin-modal">
+    <div class="project-modal-dialog">
+      <button class="modal-close" id="project-modal-close-btn">&times;</button>
+      
+      <div class="project-modal-header">
+        <div>
+          <span class="service-badge" id="pmodal-status-badge">In Progress</span>
+          <h2 id="pmodal-title" style="margin-top: 6px; color: #fff; font-size: 1.35rem;">Project Title</h2>
+          <div style="font-size: 0.84rem; color: var(--text-muted); margin-top: 2px;">
+            Project ID: <strong id="pmodal-id" style="color: var(--gold-primary); font-family: monospace;">RL-PRJ-2026-101</strong> | 
+            Ref: <span id="pmodal-ref">REQ-98421</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <a href="#" id="pmodal-view-portal-btn" target="_blank" class="btn-header" style="background: rgba(0,212,255,0.1); color: var(--accent-cyan);">
+            ✨ View Portal ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- PROGRESS SLIDER (0% to 100%) -->
+      <div class="editor-section-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <label style="font-weight: 700; color: #fff; font-size: 0.95rem;">
+            📊 Live Project Progress Percentage (%)
+          </label>
+          <span id="pmodal-progress-val-badge" class="progress-percent-badge">75%</span>
+        </div>
+        <input type="range" id="pmodal-progress-slider" min="0" max="100" step="5" value="75" class="custom-range-slider" />
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+          <span>0% (Kickoff)</span>
+          <span>25% (Architecture)</span>
+          <span>50% (Design/Prototype)</span>
+          <span>75% (Core Dev)</span>
+          <span>100% (Completed &amp; Handover)</span>
+        </div>
+      </div>
+
+      <!-- PROJECT CONFIG FORM -->
+      <form id="project-editor-form" class="project-editor-grid">
+        <div class="login-field">
+          <label for="pmodal-status-select">Project Lifecycle Status</label>
+          <select id="pmodal-status-select" class="filter-select">
+            <option value="pending_approval">Pending Admin Approval</option>
+            <option value="in_progress">In Progress (Active Dev)</option>
+            <option value="in_review">QA / Client Review</option>
+            <option value="completed">Completed (100% Handover)</option>
+          </select>
+        </div>
+
+        <div class="login-field">
+          <label for="pmodal-lead-eng">Assigned Lead Architect</label>
+          <input type="text" id="pmodal-lead-eng" class="filter-select" placeholder="e.g. Palanisamy R." />
+        </div>
+
+        <div class="login-field">
+          <label for="pmodal-target-date">Target Delivery Date</label>
+          <input type="text" id="pmodal-target-date" class="filter-select" placeholder="e.g. 2026-08-30" />
+        </div>
+
+        <div class="login-field">
+          <label for="pmodal-budget">Agreed Budget (INR)</label>
+          <input type="text" id="pmodal-budget" class="filter-select" placeholder="e.g. ₹24,999" />
+        </div>
+
+        <div class="login-field full" style="grid-column: 1 / -1;">
+          <label for="pmodal-desc">Project Description / Scope</label>
+          <textarea id="pmodal-desc" class="filter-select" rows="2" style="width: 100%; border-radius: var(--radius-sm); padding: 10px;"></textarea>
+        </div>
+
+        <!-- MILESTONES CHECKLIST -->
+        <div class="editor-section-card full" style="grid-column: 1 / -1;">
+          <label style="font-weight: 700; color: #fff; font-size: 0.95rem; display: block; margin-bottom: 12px;">
+            🏁 Milestones Checklist (Synced to Client Portal)
+          </label>
+          <div id="pmodal-milestones-checklist" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- INVOICES & BILLING MANAGER -->
+        <div class="editor-section-card full" style="grid-column: 1 / -1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-weight: 700; color: #fff; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+              🧾 Project Invoices &amp; Payment Billing
+            </label>
+            <button type="button" id="pmodal-add-invoice-btn" class="btn-header" style="background: rgba(255, 215, 0, 0.15); color: var(--gold-primary); font-size: 0.82rem; padding: 5px 12px;">
+              ➕ Generate New Invoice
+            </button>
+          </div>
+          <div id="pmodal-invoices-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- DELIVERABLES & FILES MANAGER -->
+        <div class="editor-section-card full" style="grid-column: 1 / -1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-weight: 700; color: #fff; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+              📥 Deliverables &amp; Asset Downloads
+            </label>
+            <button type="button" id="pmodal-add-file-btn" class="btn-header" style="background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); font-size: 0.82rem; padding: 5px 12px;">
+              ➕ Attach Deliverable File
+            </button>
+          </div>
+          <div id="pmodal-files-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- CHAT REPLY DIRECT TO CLIENT PORTAL -->
+        <div class="editor-section-card full" style="grid-column: 1 / -1;">
+          <label style="font-weight: 700; color: #fff; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+            💬 Send Message to Client Portal Chat
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="pmodal-admin-chat-input" class="filter-select" placeholder="Send an update, link or question to client..." style="flex: 1;" />
+            <button type="button" id="pmodal-send-chat-btn" class="btn-header" style="background: var(--gold-gradient); color: #000; font-weight: 700;">
+              Send 🚀
+            </button>
+          </div>
+        </div>
+
+        <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn-header btn-logout" id="pmodal-delete-project-btn">🗑️ Delete Project</button>
+          <button type="submit" class="btn-header" id="pmodal-save-btn" style="background: var(--gold-gradient); color: #000; font-weight: 700; padding: 10px 24px;">
+            💾 Save Changes &amp; Sync Client Portal
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========== 5. INVOICE EDITOR MODAL (ADMIN) ========== -->
+  <div id="invoice-editor-modal" class="custom-admin-modal">
+    <div class="project-modal-dialog" style="max-width: 540px;">
+      <button class="modal-close" id="inv-modal-close-btn">&times;</button>
+      <h3 style="color: #fff; margin-bottom: 6px;" id="inv-modal-heading">🧾 Edit Tax Invoice</h3>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">Configure invoice details, payment status, and pricing synced with the Client Portal.</p>
+      
+      <form id="invoice-editor-form" style="display: flex; flex-direction: column; gap: 14px;">
+        <input type="hidden" id="inv-edit-id" />
+        
+        <div class="login-field">
+          <label for="inv-edit-number">Invoice Number / Reference</label>
+          <input type="text" id="inv-edit-number" class="filter-select" placeholder="e.g. RAJ/2026/089" required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="login-field">
+            <label for="inv-edit-date">Issue Date</label>
+            <input type="date" id="inv-edit-date" class="filter-select" required />
+          </div>
+          <div class="login-field">
+            <label for="inv-edit-duedate">Due Date</label>
+            <input type="date" id="inv-edit-duedate" class="filter-select" required />
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="login-field">
+            <label for="inv-edit-amount">Base Amount (₹ INR)</label>
+            <input type="number" id="inv-edit-amount" class="filter-select" placeholder="e.g. 24999" step="0.01" required />
+          </div>
+          <div class="login-field">
+            <label for="inv-edit-status">Payment Status</label>
+            <select id="inv-edit-status" class="filter-select">
+              <option value="paid">PAID (Green Tag)</option>
+              <option value="pending">PENDING / DUE (Gold Tag)</option>
+              <option value="overdue">OVERDUE (Red Tag)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; text-transform: none; color: #fff;">
+            <input type="checkbox" id="inv-edit-tax-check" style="accent-color: var(--gold-primary); width: 16px; height: 16px;" checked />
+            <span>Apply standard 18% GST Tax automatically</span>
+          </label>
+        </div>
+
+        <div class="login-field">
+          <label for="inv-edit-item-desc">Item Description / Deliverable Details</label>
+          <input type="text" id="inv-edit-item-desc" class="filter-select" placeholder="e.g. Web App Design & API Integration" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn-header" id="inv-modal-cancel-btn" style="background: rgba(255,255,255,0.08);">Cancel</button>
+          <button type="submit" class="btn-header" style="background: var(--gold-gradient); color: #000; font-weight: 700;">💾 Save Invoice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== 6. FILE ATTACHMENT MODAL (ADMIN) ========== -->
+  <div id="file-editor-modal" class="custom-admin-modal">
+    <div class="project-modal-dialog" style="max-width: 500px;">
+      <button class="modal-close" id="file-modal-close-btn">&times;</button>
+      <h3 style="color: #fff; margin-bottom: 6px;">📥 Attach Deliverable File / Asset Link</h3>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">Add deliverable specifications, source files or staging URLs for your client.</p>
+
+      <form id="file-editor-form" style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="login-field">
+          <label for="file-edit-name">File / Deliverable Name</label>
+          <input type="text" id="file-edit-name" class="filter-select" placeholder="e.g. Technical-Architecture-Spec.pdf" required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="login-field">
+            <label for="file-edit-type">Asset Type</label>
+            <select id="file-edit-type" class="filter-select">
+              <option value="document">📄 Document (PDF / Doc)</option>
+              <option value="archive">📦 Archive (ZIP / Source)</option>
+              <option value="link">🌐 Web / Staging Link</option>
+            </select>
+          </div>
+          <div class="login-field">
+            <label for="file-edit-tag">Category Tag</label>
+            <input type="text" id="file-edit-tag" class="filter-select" placeholder="e.g. Design / Tech Specs" />
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="file-edit-url">Download URL or Link Address</label>
+          <input type="text" id="file-edit-url" class="filter-select" placeholder="https://example.com/file or data URL" required />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn-header" id="file-modal-cancel-btn" style="background: rgba(255,255,255,0.08);">Cancel</button>
+          <button type="submit" class="btn-header" style="background: var(--gold-gradient); color: #000; font-weight: 700;">➕ Attach Deliverable</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="admin-toast">Notification Message</div>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Firebase config helper -->
+  <script src="js/firebase-config.js"></script>
+
+  <!-- Admin logic -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
